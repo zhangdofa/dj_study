@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>test</title>
+    <!-- 引入 echarts.js -->
+    <script src="/static/echarts.min.js"></script>
+    <script src="/static/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="home" style="width: auto; height: 400px;"></div>
+<script type="text/javascript">
+var myChart = echarts.init(document.getElementById("home"));
+$.ajax({
+      type: "get",
+      url: "brand_stock/data.json",
+      dataType: "json",
+      success: function (data) {
+      var  option = {
+    title: {
+        text: '品牌库存情况'
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'shadow'
+        }
+    },
+    grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+    },
+    xAxis: {
+        type: 'value',
+        boundaryGap: [0, 0.01]
+    },
+    yAxis: {
+        type: 'category',
+        data: data.key
+    },
+    series: [
+        {
+            name: '库存量',
+            type: 'bar',
+            data: data.value,itemStyle: {
+							normal: {
+								label: {
+									show: true //开启显示
+//									position: 'top', //在上方显示
+//									textStyle: { //数值样式
+//										color: 'black',
+//										fontSize: 16
+//									}
+								}
+							}
+						}
+        }
+
+    ]
+};
+      myChart.setOption(option)
+      },
+      error: function () {
+        alert('Error: ajax 请求出错！')
+      }
+    });
+
+
+</script>
+</body>
+</html>

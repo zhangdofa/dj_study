@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="utf-8">
+  <title>淘宝手机数据分析</title>
+  <!-- 引入 echarts.js -->
+  <script src="/static/echarts.min.js"></script>
+  <script src="/static/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+  <div id="main" style="height:500px;"></div>
+
+<script type="text/javascript">
+$.ajax({
+    url: 'index/data.json',
+    type: 'get',
+//    data: {'storeid': val},
+    dataType: 'json',
+    success: function (data) {
+//        a['key'] = data['key'];
+//        b['value'] = data['value'];
+//        console.log(data['key']);
+        var key = [] ;
+        var value = [];
+        var j = 0;
+        for(var i in data['key']){
+            if(i<10){
+                 value.push(data['value'][i]);
+                 var s = data['key'][i];
+                 s = s.substring(0,10);
+                 key.push(s);
+                 console.log(s);
+//                 value =  data['value'][i];
+//                 console.log(j);
+                 j += 1;
+            }
+            else {
+                break
+            }
+        }
+//        console.log(key);
+        var apidata = {
+    params:[
+key,
+value
+]
+};
+var dom = document.getElementById("main");
+var myChart = echarts.init(dom);
+//var myChart = echarts.init(document.getElementById('main'));
+
+
+function addData(shift) {
+
+      j += 1;
+      c = apidata.params[0];
+      d = apidata.params[1];
+//      console.log(date);
+//      console.log(date);
+      var a = [];
+      var b = [];
+//      console.log(j);
+      for(var i in data['key']) {
+//            console.log(i);
+            if (i >= j && i < j+1 ) {
+                    console.log(j);
+//                    c.push(data['key'][i]);
+                    d.push(data['value'][i]);
+                    var s = data['key'][i];
+                    s = s.substring(0,10);
+                    console.log(s);
+                    c.push(s);
+//                    j += 1
+
+        //                 value =  data['value'][i];
+            }
+
+        }
+//    c.push(parseInt(Math.random()*10));
+//    d.push(parseInt(Math.random()*10));
+    if (shift) {
+        c.shift();
+        d.shift();
+    }
+
+
+   
+}
+
+
+option = {
+            title: {
+                text: '分店缺货走势图'
+            },
+            tooltip: {trigger: 'axis',//提示跟随鼠标位置显示
+        axisPointer: {
+            type: 'cross',
+            label: {
+                backgroundColor: '#283b56'
+            }
+        }},
+            legend: {
+                data:['销量']
+            },
+            xAxis: {
+                data: apidata.params[0]
+            },
+            yAxis: {boundaryGap: [0, '100%']},
+            series: [{
+                name: '销量',
+                type: 'line',
+                data: apidata.params[1]
+            }]
+        };
+
+
+setInterval(function () {
+    addData(true);
+    myChart.setOption({
+        xAxis: {
+            data: c
+        },
+        series: [{
+            name:'成交',
+            data: d
+        }]
+    });
+}, 2000);
+
+
+//下面这段代码是必须要加的，否则会报 series.type should be specified.
+    if (option && typeof option === "object") {
+    myChart.setOption(option, true);
+}
+    }
+});
+//console.log(a);
+//console.log(b);
+
+
+</script>
+</body>
+</html>

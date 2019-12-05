@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>淘宝手机数据分析</title>
+  <!-- 引入 echarts.js -->
+  <script src="/static/echarts.min.js"></script>
+  <script src="/static/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+  <div id="main" style="height:500px;"></div>
+  <div id="sales" style="height:500px;"></div>
+  <script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'));
+
+
+    $.ajax({
+      type: "get",
+      url: "/tb/api/echarts/",
+      dataType: "json",
+      success: function (data) {
+
+        // 指定图表的配置项和数据
+        var option = {
+          title: {
+            left: 'center',
+            text: '手机人气排行'
+          },
+          tooltip: {},
+          xAxis: {
+              axisLabel: {
+                interval:0,
+                rotate:20,
+                textStyle: {
+                    color: '#000'
+//                    fontSize: '13'
+                }
+              },
+
+              data: data.key
+
+          },
+          grid: {
+                left: '15%',
+                bottom:'20%'
+          },
+          yAxis: {
+
+          },
+          series: [{
+            name: '收藏量',
+            type: 'bar',
+            barWidth:25,
+            barGap:'100%',/*多个并排柱子设置柱子之间的间距*/
+            data: data.value
+          }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+      },
+      error: function () {
+        alert('Error: ajax 请求出错！')
+      }
+    });
+
+    var myChart1 = echarts.init(document.getElementById('sales'));
+
+
+    $.ajax({
+      type: "get",
+      url: "/tb/api/sales",
+      dataType: "json",
+      success: function (data) {
+
+        // 指定图表的配置项和数据
+        var option = {
+          title: {
+            left: 'center',
+            text: '各个手机品牌销量排行'
+          },
+          tooltip: {},
+          xAxis: {
+              axisLabel: {
+                interval:0,
+                rotate:20,
+                textStyle: {
+                    color: '#000'
+//                    fontSize: '13'
+                }
+              },
+
+
+              data: data.key
+          },
+          grid: {
+                left: '15%',
+                bottom:'20%'
+          },
+          yAxis: {
+
+          },
+          series: [{
+            name: '销量',
+            type: 'bar',
+            barWidth:25,
+            barGap:'100%',/*多个并排柱子设置柱子之间的间距*/
+            data: data.value
+          }]
+        };
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart1.setOption(option);
+      },
+      error: function () {
+        alert('Error: ajax 请求出错！')
+      }
+    });
+  </script>
+</body>
+</html>

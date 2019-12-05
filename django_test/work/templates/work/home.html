@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!--<meta charset="utf-8">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="/static/css/new_file.css"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.bootcss.com/bootstrap/3.1.0/css/bootstrap.css">
+    <script src="/static/jquery-3.4.1.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="/static/bootstrap.min.js"></script>
+    <title></title>
+    <style>
+        .dropdown {
+            position: relative;
+            height: 50px;
+            margin-left: 60px;
+            margin-top: 10px;
+            display: inline-block;
+            float: left;
+        }
+
+        .dropdown-content {
+            display: none;
+            z-index: 999;
+            margin-top: 50px;
+            position: absolute;
+            background-color: #f9f9f9;
+            width: 100px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        }
+
+        .dropdown-content a {
+            color: #000000;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #f1f1f1
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropbtn .touxiang {
+            border-radius: 50%;
+        / / 圆角百分比
+        }
+
+        .dropdown:hover .dropbtn {
+            /*background-color: #3e8e41;*/
+        }
+
+        #login {
+            width: 100px;
+            position: relative;
+            right: 150px;
+            top: 30px;
+            float: right;
+            /*margin-top: 30px;*/
+        }
+
+        video {
+            object-fit: fill;
+            margin-right: 6.5px;
+        }
+         .sange{
+            /*margin-left: 33px;*/
+            margin-top: 4px;
+            font-weight: bold;
+            font-size: medium;
+        }
+        .class{
+            margin-right: 20px;
+        }
+        .kuangkuang{
+
+        }
+    </style>
+
+</head>
+<body>
+<center>
+    <div class="dakuang">
+        <header class="header">
+            <div class="logo">
+                <img src="/static/imgs/logo.jpg"/>
+            </div>
+            <div class="sange">
+                <a class="class" href="/work/home">计算机</a>
+                <a class="class" href="/work/home1">外语</a>
+                <a class="class" href="/work/home2">考研</a>
+            </div>
+            <div class="sousuo">
+                <input type="text" name="kuang" class="kuangkuang"/>
+                <img class="find" src="/static/imgs/find.png" />
+            </div>
+            <div class="dropdown">
+                <div class="dropbtn" style="position: relative">
+                    <img class="touxiang" src="/static/imgs/touxiang.jpg"
+                         style="height:30px;float:left;margin-top: 14px;">
+                </div>
+                <div class="dropdown-content">
+                    <a href="/work/person">个人中心</a>
+                    <a href="/work/logout">注销退出</a>
+                </div>
+                <div class="wel" style="width: 200px;text-align: left;margin-left: 40px">
+                    <div style="display: inline-block;margin-top: 18px;font-size:large;font-weight: bold;"
+                         id="user">{{username}}</div>
+                    <span>  欢迎您登陆！</span>
+                </div>
+            </div>
+
+            <div id="login">
+                <a href="/work/login">登录</a>
+                <b>|</b>
+                <a href="/work/register">注册</a>
+            </div>
+
+            <div class="login_msg" style="display: none">{{login_msg}}</div>
+            <div class="register_msg" style="display: none">{{register_msg}}</div>
+            <div class="uppwd_msg" style="display: none">{{uppwd_msg}}</div>
+            <div class="find_error" style="display: none">{{find_error}}</div>
+            <div class="no_error" style="display: none">{{no_error}}</div>
+
+
+        </header>
+        <div class="content">
+            <div class="shenzhong">
+                <!-- <div class="zuo1"></div> -->
+                <div class="zuo2">
+                    <div id="demo" class="carousel slide" data-ride="carousel" data-interval="4000">
+
+                        <!-- 指示符 -->
+                        <ul class="carousel-indicators">
+                            <li data-target="#demo" data-slide-to="0" class="active"></li>
+                            <li data-target="#demo" data-slide-to="1"></li>
+                            <li data-target="#demo" data-slide-to="2"></li>
+                        </ul>
+
+                        <!-- 轮播图片 -->
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="/static/imgs/nav3.jpg" height="300px" width="100%">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/imgs/nav4.jpg" height="300px"
+                                     width="100%">
+                            </div>
+                            <div class="carousel-item">
+                                <img src="/static/imgs/nav6.jpg" height="300px"
+                                     width="100%">
+                            </div>
+                        </div>
+
+                        <!-- 左右切换按钮 -->
+                        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </a>
+                        <a class="carousel-control-next" href="#demo" data-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </a>
+
+                    </div>
+                </div>
+                <!-- <div class="zuo3"></div> -->
+                <label style="margin-top: 25px;font-size: 1.5rem;">推荐课程</label>
+            </div>
+            <div class="xia">
+                {% for Users in Users_list %}
+                <!--<video id="video" width="260" height="240" controls="controls" style="display: none">-->
+                <!--<source src="/static/media/{{ Users.headimg }}" type="video/mp4"/>-->
+                <!--</video>-->
+                <!--<div id="output"></div>-->
+                <div class="contents">
+                    <video class="videos" preload="metadata" onloadeddata='vSetImg(this)' width="100%" height="240"
+                           src="/static/media/{{ Users.headimg }}">
+                        <source src="/static/media/{{ Users.headimg }}" type="video/mp4"/>
+                    </video>
+                    <img class="img" src=""/>
+                    <div style="position: absolute;top: 250px;width: 100%;height: auto;">{{Users.headimg}}</div>
+                    <div style="font-size: 12px;font-weight: bold;bottom: 0;position: absolute;">{{ Users.username }} 于{{ Users.uptime }}上传</div>
+                </div>
+                {% endfor %}
+                <!--{% for foo in url %}-->
+                <!--<video width="260" height="240" controls="controls">-->
+                <!--<source src="/static/media/{{ foo }}" type="video/mp4"/>-->
+                <!--</video>-->
+                <!--{% endfor %}-->
+            </div>
+        </div>
+        <div>
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if Users_list.has_previous %}
+                    <li><a href="?page={{ Users_list.previous_page_number }}" aria-label="Previous"><span
+                            aria-hidden="true">上一页</span></a></li>
+                    {% else %}
+                    <li class="disabled"><a href="" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                    {% endif %}
+                    {# disabled是当你的按钮不满足的时候不可以点击了#}
+                    {% for i in pageRange %}
+                    {% if current_num == i %}
+                    <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% else %}
+                    <li><a href="?page={{ i }}">{{ i }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+                    <li>
+                        <a href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+        <footer class="footer">Copyright  ©2019 by 第四视频 .All rights reserved. </footer>
+    </div>
+    <script>
+                var s = $('#user').html();
+                var msg = $('.login_msg').html();
+                var msg1 = $('.register_msg').html();
+                var msg2 = $('.uppwd_msg').html();
+                var msg3 = $('.find_error').html();
+                var msg4 = $('.no_error').html();
+                console.log(s);
+                console.log(msg);
+//                console.log('没反应');
+                console.log(msg1);
+                console.log(msg2);
+                console.log(msg3);
+                console.log(msg4);
+//                alert(msg);
+                //                console.log(typeof(s));
+                 if (msg === 'None'){
+                 }else {
+                    alert('登陆成功！')
+                }
+                if (msg1 === 'None'){
+                 }else {
+                    alert('注册成功！')
+                }
+                if (msg2 === 'None'){
+                 }else {
+                    alert('修改密码成功！请重新登陆！')
+                }
+                if (msg3=== 'None'){
+                 }else {
+                    alert('您未输入搜索内容！请输入后重试！')
+                }
+                if (msg4=== 'None'){
+                 }else {
+                    alert('抱歉！没有找到你想要的内容！')
+                }
+                if (s === "None") {
+//                    console.log(s);
+                    $('.wel').hide();
+                    $('.dropbtn').hide();
+                    $('#login').show();
+                    $('.dropdown-content').hide();
+                    console.log("没有登陆！")
+                } else {
+//                    console.log(s);
+                    $('#login').hide();
+                    $('.dropbtn').show();
+                    console.log("已经登陆")
+                }
+                $(".contents").on("click",function(){
+                   var src =  $(this).find('video').attr("src");
+                   window.location.href = '/work/playpage?url='+src;
+//                    alert(src);
+                });
+                $(".find").on("click",function(){
+                   var src =  $('.kuangkuang').val();
+//                   alert(src);
+                   window.location.href = '/work/find?keyword='+src;
+//                    alert(src);
+                });
+            </script>
+</center>
+</body>
+</html>
+<!-- 视频用图片跳转 -->
+<!-- div包裹搜索框和按钮，设置div样式与框重合，按钮则靠右重合 -->

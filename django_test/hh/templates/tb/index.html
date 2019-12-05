@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>test</title>
+  <!-- 引入 echarts.js -->
+  <script src="/static/echarts.min.js"></script>
+  <script src="/static/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+  <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+  <select id="select">
+    <option value="7">第7天</option>
+    <option value="6">第6天</option>
+    <option value="5">第5天</option>
+    <option value="4">第4天</option>
+    <option value="3">第3天</option>
+    <option value="2">第2天</option>
+    <option value="1">第1天</option>
+  </select>
+<div id="home" style="width: 600px; height: 400px"></div>
+  <script type="text/javascript">
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('home'));
+    var h = $('#select').val();
+    console.log(h);
+    _ajax(h);
+$(function() {
+    $('#select').on('change', function() {
+        var val = $(this).val();
+        _ajax(val);
+        console.log(val)
+    });
+});
+
+function _ajax(len) {
+    $.ajax({
+        url: 'data/index.json',
+        type: 'get',
+        dataType: 'json',
+        success: function(data) {
+            console.log(data);
+            var xData = [];
+            var yData = [];
+            console.log(len);
+            for (var i = 0; i < len; i++) {
+                xData.push(data.rows[i].by_value.slice(5));
+                console.log(data.rows[i].by_value.slice(5));
+            }
+            for (var n = 0, m = 8-len; n < len; n++) {
+                yData.push(data.rows[n].cells[m].percent);
+            }
+            myChart.setOption({
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xData
+                },
+                tooltip: {},
+                yAxis: {
+                    type: 'value'
+                },
+                series: [{
+                    name: '最高气温',
+                    type: 'line',
+                    data: yData
+                }]
+            });
+        },
+         error: function () {
+        alert('Error: ajax 请求出错！')
+      }
+    });
+}
+  </script>
+</body>
+</html>

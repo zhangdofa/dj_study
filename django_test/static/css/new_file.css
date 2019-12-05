@@ -1,0 +1,189 @@
+/** {*/
+/*margin: 0;*/
+/*padding: 0;*/
+/*}*/
+
+/*body {*/
+/*text-align: center;*/
+/*!*min-width: 1000px;*!*/
+/*!*position: relative;*!*/
+/*!*min-height: 100%;*!*/
+/*}*/
+
+.dakuang {
+    width: 100%;
+    height: 1600px;
+    /*min-height: 960px;*/
+    position: relative;
+    /*min-height: 1000px;*/
+    background: #F0F0F0;
+}
+
+.header {
+    width: 100%;
+    height: 65px;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.shenzuo {
+    width: 10%;
+    height: 800px;
+    float: left;
+}
+
+.shenzhong {
+    width: 80%;
+    /*min-height: 100vh;*/
+    /*float: left;*/
+    margin-top: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.shenyou {
+    width: 10%;
+    height: 800px;
+    float: left;
+}
+
+.content {
+    /*position:relative;*/
+    /*min-height: 1000px;*/
+    height: 1380px;
+    margin-bottom: 28px;
+    /*padding-bottom:80px*/
+}
+
+.footer {
+    left: 0;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding-top: 20px;
+    color: white;
+    height: 50px;
+    background-color: #4F4F4F;
+    z-index: 9999;
+}
+
+/* .zuo1{
+	width: 20%;
+	height: 300px;
+	float: left;
+	background-color: red;
+} */
+.zuo2 {
+    width: 100%;
+    height: 300px;
+    float: left;
+}
+
+.carousel-inner img {
+    border-radius: 5px;
+}
+
+/* .zuo3{
+	width: 20%;
+	height: 300px;
+	float: left;
+	background-color: violet;
+} */
+.logo {
+    width: 16%;
+    height: 65px;
+    float: left;
+    margin-left: 10%;
+    background-color: antiquewhite;
+}
+
+.sange {
+    width: 24%;
+    height: 65px;
+    float: left;
+    line-height: 80px;
+}
+
+.sousuo {
+    width: 24%;
+    height: 65px;
+    margin-top: 6.5px;
+    float: left;
+}
+
+.kuangkuang {
+    width: 80%;
+    height: 30px;
+    margin-left: 100px;
+    margin-top: 10px;
+    border: 0.125rem solid #969696;
+    border-radius: 40px;
+    /*margin-left: 2rem;*/
+}
+
+.round_icon {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.sousuo img {
+    width: 2.5rem;
+    height: 30px;
+    position: relative;
+    left: 175px;
+    bottom: 29px;
+    /*top: 25px;*/
+    /*border: 0.125rem solid blue;*/
+    border-radius: 40px;
+}
+
+.denglu {
+    width: 16%;
+    height: 65px;
+    float: left;
+    text-align: center;
+    line-height: 80px;
+}
+
+.logo img {
+    width: 100%;
+    height: 100%;
+}
+
+.sange a {
+    text-decoration: inherit;
+    color: black;
+    margin-left: 2rem;
+}
+
+.sousuo input {
+    margin-top: 1.9rem;
+    padding-left: 20px;
+}
+
+.denglu a {
+    color: black;
+}
+
+.xia {
+    width: 80%;
+    /*height: 200px;*/
+    margin-top: 15px;
+}
+
+.xia .contents {
+    width: 24%;
+    height: 315px;
+    float: left;
+    position: relative;
+    border-radius: 5px;
+    margin-bottom: 30px;
+    margin-left: 8px;
+    background-color: white;
+    /*border: solid 2px black;*/
+}

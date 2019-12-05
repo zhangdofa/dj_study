@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>test</title>
+    <!-- 引入 echarts.js -->
+    <script src="/static/echarts.min.js"></script>
+    <script src="/static/jquery-3.4.1.min.js"></script>
+</head>
+<body>
+<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+<div style="width: 100%;height: 500px;">
+    <!--<div style="float: left;width: 100%;">-->
+    <!--</div>-->
+    <div id="top1" style="width:50%;height: 400px;float: left;"></div>
+
+    <div id="top" style="width: 50%;height: 400px;float: right;"></div>
+</div>
+
+<div style="width: auto;align-content: center">
+    <div>
+        <select id="select">
+            {%for i,j in store%}
+            <option value="{{i.storeid}}">{{j.storename}}</option>
+            {%endfor%}
+        </select>
+    </div>
+    <div id="home" style="width: auto; height: 500px;"></div>
+</div>
+<div style="width: auto;align-content: center">
+    <div>
+        <select id="quehuo" disabled="disabled">
+            {%for i,j in store1%}
+            <option value="{{i.storeid}}">{{j.storename}}</option>
+            {%endfor%}
+        </select>
+    </div>
+    <div id="main" style="width:auto;height:500px;"></div>
+
+</div>
+
+
+<script type="text/javascript">
+    //品牌排行柱状图
+    var myChart1 = echarts.init(document.getElementById('top'));
+    $.ajax({
+        type: "get",
+        url: "brand_stock/data.json",
+        dataType: "json",
+        success: function (data) {
+            var option = {
+                title: {
+                    text: '品牌库存情况'
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                legend: {
+                    show: true,
+                    data: ['库存量']
+                },
+                xAxis: {
+                    type: 'value',
+                    boundaryGap: [0, 0.01]
+                },
+                yAxis: {
+                    type: 'category',
+                    data: data.key
+                },
+                series: [
+                    {
+                        name: '库存量',
+                        type: 'bar',
+                        data: data.value, itemStyle: {
+                        normal: {
+                            label: {
+                                show: true //开启显示
+//									position: 'top', //在上方显示
+//									textStyle: { //数值样式
+//										color: 'black',
+//										fontSize: 16
+//									}
+                            }
+                        }
+                    }
+                    }
+
+                ]
+            };
+            myChart1.setOption(option)
+        },
+        error: function () {
+            alert('Error: ajax 请求出错！')
+        }
+    });
+    //    $.ajax({
+    //        type: "get",
+    //        url: "brand_stock/data.json",
+    //        dataType: "json",
+    //        success: function (data) {
+    //
+    //            // 指定图表的配置项和数据
+    //            var option = {
+    //                title: {
+    //                    left: 'center',
+    //                    text: '各个品牌库存情况'
+    //                },
+    //                tooltip: {},
+    //                xAxis: {
+    //                    axisLabel: {
+    //                        interval: 0,
+    //                        rotate: 20,
+    //                        textStyle: {
+    //                            color: '#000'
+    ////                    fontSize: '13'
+    //                        }
+    //                    },
+    //
+    //
+    //                    data: data.key
+    //                },
+    ////          grid: {
+    ////                left: '15%',
+    ////                bottom:'20%'
+    ////          },
+    //                yAxis: {},
+    //                series: [{
+    //                    name: '库存量',
+    //                    type: 'bar',
+    //                    barWidth: 25,
+    //                    barGap: '100%', /*多个并排柱子设置柱子之间的间距*/
+    //                    data: data.value
+    //                }]
+    //            };
+    //
+    //            // 使用刚指定的配置项和数据显示图表。
+    //            myChart1.setOption(option);
+    //        },
+    //        error: function () {
+    //            alert('Error: ajax 请求出错！')
+    //        }
+    //    });
+
+    //品牌库存排行饼图
+    var myChart3 = echarts.init(document.getElementById('top1'));
+
+    $.ajax({
+        type: "get",
+        url: "brand_stock/data.json",
+        dataType: "json",
+        success: function (data) {
+//      console.log(data);
+            var test = [];
+            for (var i in data['key']) {
+                test.push({value: data['value'][i], name: data['key'][i]});
+            }
+            // 指定图表的配置项和数据
+            // 基于准备好的dom，初始化echarts实例
+            // 指定图表的配置项和数据
+            option = {
+                title: {
+                    show: true,
+                    fontSize: 15,
+                    text: '各个品牌库存量'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: " <br/>{b} : {c} ({d}%)"
+                },
+                series: [{
+                    type: 'pie',
+                    radius: '65%',
+                    center: ['50%', '63%'],
+                    label: {            //饼图图形上的文本标签
+                        normal: {
+                            show: true,
+                            textStyle: {
+                                fontWeight: 300,
+                                fontSize: 16    //文字的字体大小
+                            },
+                            formatter: '{b}:{c}: ({d}%)'
+
+                        }
+                    },
+                    data: test//赋值方式为字典传值
+                }]
+            };
+            console.log(test);
+            // 使用刚指定的配置项和数据显示图表。
+            myChart3.setOption(option);
+        },
+        error: function () {
+            alert('Error: ajax 请求出错！')
+        }
+    });
+
+    //分店库存柱状图
+    // 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('home'));
+    var h = $('#select').val();
+    console.log(h);
+    _ajax(h);
+    $(function () {
+        $('#select').on('change', function () {
+            var val = $(this).val();
+            _ajax(val);
+            console.log(val)
+        });
+    });
+
+    function _ajax(val) {
+        //分店库存
+        var req = $.ajax({
+            url: 'data/index.json',
+            type: 'get',
+            data: {'storeid': val},
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+                myChart.setOption({
+                    title: {
+//                        left: 'center',
+                        text: '分店库存情况'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: true,
+                        data: data.key,
+                        axisLabel: {
+                            interval: 0,
+                            rotate: 20,
+                            textStyle: {
+                                color: '#000'
+                                //                    fontSize: '13'
+                            }
+                        }
+                    },
+                    grid: {
+                        left: '13%',
+                        bottom: '25%'
+                    },
+                    legend: {
+                        show: true,
+                        data: ['库存量']
+                    },
+                    tooltip: {},
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        name: '库存量',
+                        type: 'bar',
+                        barWidth: 25,
+                        barGap: '100%',
+                        data: data.value,
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true, //开启显示
+                                    position: 'top', //在上方显示
+                                    textStyle: { //数值样式
+                                        color: '#444444',
+                                        fontSize: 16
+                                    }
+                                }
+                            }
+                        }
+                    }]
+                });
+            },
+            error: function () {
+                alert('Error: ajax 请求出错！')
+            }
+        });
+    }
+
+
+    //分店缺货走势图
+    var h1 = $('#quehuo').val();
+    //    console.log(h1);
+    var data = _ajax1(h1);
+    //   console.log(data);
+    //   get_data(h1,data);
+    //    console.log(r);
+    function _ajax1(val) {
+        //分店缺货
+        //
+        $.ajax({
+            url: 'quehuo/data.json',
+            type: 'get',
+            data: {'storeid': val},
+            dataType: 'json',
+//      success:function(data){
+//            s = data
+//        }
+
+            success: function (data) {
+//        a['key'] = data['key'];
+//        b['value'] = data['value'];
+//        console.log(data['key']);
+                var key = [];
+                var value = [];
+                var j = 0;
+                for (var i in data['key']) {
+                    if (i < 10) {
+                        value.push(data['value'][i]);
+                        var s = data['key'][i];
+                        s = s.substring(0, 10);
+                        key.push(s);
+                        console.log(s);
+//                 value =  data['value'][i];
+//                 console.log(j);
+                        j += 1;
+                    }
+                    else {
+                        break
+                    }
+                }
+//        console.log(key);
+                var apidata = {
+                    params: [
+                        key,
+                        value
+                    ]
+                };
+                var dom = document.getElementById("main");
+                var myChart = echarts.init(dom);
+
+//var myChart = echarts.init(document.getElementById('main'));
+
+
+                function addData(shift) {
+
+                    j += 1;
+                    c = apidata.params[0];
+                    d = apidata.params[1];
+//      console.log(date);
+//      console.log(date);
+                    var a = [];
+                    var b = [];
+//      console.log(j);
+                    for (var i in data['key']) {
+//            console.log(i);
+                        if (i >= j && i < j + 1) {
+                            console.log(j);
+//                    c.push(data['key'][i]);
+                            d.push(data['value'][i]);
+                            var s = data['key'][i];
+                            s = s.substring(0, 10);
+                            console.log(s);
+                            c.push(s);
+//                    j += 1
+
+                            //                 value =  data['value'][i];
+                        }
+
+                    }
+//    c.push(parseInt(Math.random()*10));
+//    d.push(parseInt(Math.random()*10));
+                    if (shift) {
+                        c.shift();
+                        d.shift();
+                    }
+
+
+                }
+
+
+                option = {
+                    title: {
+//                        left:'center',
+                        text: '分店缺货走势图'
+                    },
+                    tooltip: {
+                        trigger: 'axis',//提示跟随鼠标位置显示
+                        axisPointer: {
+                            type: 'cross',
+                            label: {
+                                backgroundColor: '#283b56'
+                            }
+                        }
+                    },
+                    legend: {
+                        data: ['缺货量']
+                    },
+                    xAxis: {
+                        data: apidata.params[0]
+                    },
+                    yAxis: {boundaryGap: [0, '100%']},
+                    series: [{
+                        name: '缺货量',
+                        type: 'line',
+                        data: apidata.params[1]
+                    }]
+                };
+
+
+                setInterval(function () {
+                    addData(true);
+                    myChart.setOption({
+                        xAxis: {
+                            data: c
+                        },
+                        series: [{
+                            name: '缺货量',
+                            data: d
+                        }]
+                    });
+                }, 2000);
+
+
+//下面这段代码是必须要加的，否则会报 series.type should be specified.
+                if (option && typeof option === "object") {
+                    myChart.setOption(option, true);
+                }
+            }
+        });
+//    return s;
+    }
+
+    $(function () {
+        $('#quehuo').on('change', function () {
+            var val = $(this).val();
+//        alert(currentAjax);
+            _ajax1(val);
+//        get_data(val,data);
+//        console.log(val)
+        });
+    });
+    //var j = 0;
+    //    var ss=0;
+    //function get_data(val,data) {
+    ////    console.log("get_data")
+    ////        a['key'] = data['key'];
+    ////        b['value'] = data['value'];
+    ////        console.log(data['key']);
+    //        var key = [] ;
+    //        var value = [];
+    //        ss =0;
+    ////        alert(val);
+    ////        console.log(data['storeid']);
+    //        for(var i in data['storeid']){
+    ////            console.log(data['storeid'][i]);
+    //            if(val === data['storeid'][i]){
+    ////                alert('hh');
+    //                    if(key.length === 10){
+    //                            break
+    //                    }else {
+    ////                     console.log(key.length);
+    //                     key.push(data['key'][i]);
+    //                     value.push(data['value'][i]);
+    //                     ss += 1;
+    //                     console.log(ss+"get_data")
+    ////                     console.log(data['storeid'][i]);
+    //                    }
+    //
+    //                }else {
+    //                break
+    //            }
+    //
+    ////            if(i<10){
+    ////                 value.push(data['value'][i]);
+    ////                 var s = data['key'][i];
+    ////                 s = s.substring(0,10);
+    ////                 key.push(s);
+    ////                 console.log(s);
+    //////                 value =  data['value'][i];
+    //////                 console.log(j);
+    ////                 j += 1;
+    ////            }
+    ////            else {
+    ////                break
+    ////            }
+    //        }
+    ////        console.log(key);
+    //        var apidata = {
+    //    params:[
+    //key,
+    //value
+    //]
+    //};
+    //var dom = document.getElementById("main");
+    //var myChart = echarts.init(dom);
+    ////var myChart = echarts.init(document.getElementById('main'));
+    //
+    //
+    //function addData(shift) {
+    //
+    //      ss += 1;
+    ////      console.log(ss+"ss")
+    //      c = apidata.params[0];
+    //      d = apidata.params[1];
+    ////      console.log(date);
+    ////      console.log(date);
+    //      var a = [];
+    //      var b = [];
+    ////      alert(c);
+    //      console.log(ss);
+    //      for(var i in data['storeid']) {//出现问题
+    ////            console.log(data['storeid'][i]);
+    ////            console.log(val);
+    ////          alert(c.length)
+    //          if (val === data['storeid'][i]) {
+    ////                alert('hh');
+    //              console.log(val + 'hh'+data['storeid'][i]);
+    //              if (i >= ss && i < ss +1 ) {
+    ////                            break
+    //                  console.log(ss+"ss"+i)
+    ////                  console.log(key.length);
+    //                  c.push(data['key'][i]);
+    //                  d.push(data['value'][i]);
+    ////                  console.log(ss+"ss"+i)
+    ////                  console.log(data['storeid'][i]);
+    //              }else if(i<ss){
+    //                  continue
+    //              }else {
+    //                  break
+    //              }
+    //          } else {
+    //              break
+    //          }
+    //
+    //      }
+    //      if (shift) {
+    //                  c.shift();
+    //                  d.shift();
+    //                }
+    ////      for(var i in data['key']) {
+    //////            console.log(i);
+    ////            if (i >= j && i < j+1 ) {
+    ////                    console.log(j);
+    //////                    c.push(data['key'][i]);
+    ////                    d.push(data['value'][i]);
+    ////                    var s = data['key'][i];
+    ////                    s = s.substring(0,10);
+    ////                    console.log(s);
+    ////                    c.push(s);
+    //////                    j += 1
+    ////
+    ////        //                 value =  data['value'][i];
+    ////            }
+    ////
+    ////        }
+    //////    c.push(parseInt(Math.random()*10));
+    //////    d.push(parseInt(Math.random()*10));
+    ////    if (shift) {
+    ////        c.shift();
+    ////        d.shift();
+    ////    }
+    //
+    //
+    //   
+    //}
+    //
+    //
+    //option = {
+    //            title: {
+    //                        left: 'center',
+    //                text: '分店缺货情况'
+    //            },
+    //            tooltip: {trigger: 'axis',//提示跟随鼠标位置显示
+    //        axisPointer: {
+    //            type: 'cross',
+    //            label: {
+    //                backgroundColor: '#283b56'
+    //            }
+    //        }},
+    //            legend: {
+    //                data:['销量']
+    //            },
+    //            xAxis: {
+    //                data: apidata.params[0]
+    //            },
+    //            yAxis: {boundaryGap: [0, '100%']},
+    //            series: [{
+    //                name: '销量',
+    //                type: 'line',
+    //                data: apidata.params[1]
+    //            }]
+    //        };
+    //myChart.setOption(option, true);
+    //
+    //setInterval(function () {
+    //    addData(true);
+    //    myChart.setOption({
+    //        xAxis: {
+    //            data: c
+    //        },
+    //        series: [{
+    //            name:'成交',
+    //            data: d
+    //        }]
+    //    });
+    //}, 2000);
+    //
+    //
+    ////下面这段代码是必须要加的，否则会报 series.type should be specified.
+    //    if (option && typeof option === "object") {
+    //    myChart.setOption(option, true);
+    //}
+    //}
+
+</script>
+</body>
+</html>

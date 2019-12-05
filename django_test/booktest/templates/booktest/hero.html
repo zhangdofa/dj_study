@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>英雄列表</title>
+</head>
+<body>
+<h1 style="color: red">{{ title }}</h1><br>
+    {%for i in heros%}
+    {{i.id}} | {{i.name}} | {{i.conment}}<br>
+    {%endfor%}
+</body>
+</html>
