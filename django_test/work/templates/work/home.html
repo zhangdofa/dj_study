@@ -171,10 +171,6 @@
             </div>
             <div class="xia">
                 {% for Users in Users_list %}
-                <!--<video id="video" width="260" height="240" controls="controls" style="display: none">-->
-                <!--<source src="/static/media/{{ Users.headimg }}" type="video/mp4"/>-->
-                <!--</video>-->
-                <!--<div id="output"></div>-->
                 <div class="contents">
                     <video class="videos" preload="metadata" onloadeddata='vSetImg(this)' width="100%" height="240"
                            src="/static/media/{{ Users.headimg }}">
