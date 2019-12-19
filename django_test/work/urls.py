@@ -18,7 +18,8 @@ from django.contrib import admin
 
 # from django_test import hh
 from .views import home, person, login, register, index, logout, test, play, logout1, login1, register1, upimg, upvideo, \
-    uppassword, upphone, delete, index1, index2, find
+    uppassword, upphone, delete, index1, index2, find, review, refuse, administrator, b_pass, b_refuse, c_refuse, \
+    logout2, play1, delete1, ll
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
@@ -32,13 +33,23 @@ urlpatterns = [
     url(r'login1/',login1),
     url(r'logout/',logout),
     url(r'logout1/',logout1),
+    url(r'logout2/',logout2),
     url(r'register/',register),
     url(r'register1/',register1),
     url(r'playpage/',play),
+    url(r'playpage1/',play1),
     url(r'upimg',upimg),
     url(r'upvideo',upvideo),
     url(r'uppassword',uppassword),
     url(r'upphone',upphone),
     url(r'delete',delete),
+    url(r'cacel',delete1),
+    url(r'll',ll),
     url(r'find',find),
+    url(r'review',review),
+    url(r'refuse',refuse),
+    url(r'administrator',administrator),
+    url(r'pass',b_pass),
+    url(r'reject',b_refuse),
+    url(r'town_down',c_refuse)
 ]

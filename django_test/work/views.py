@@ -4,6 +4,7 @@ import time
 
 import re
 from django.contrib import messages
+from django.db.models import Count
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.template import loader, RequestContext
@@ -161,6 +162,27 @@ def play(request):
         # username = ''
         print('没有cookie')
         return render_to_response('work/playpage.html', locals())
+def play1(request):
+    username = request.session.get("username")
+    login_msg1 = request.session.get("login_msg1")
+    register_msg1 = request.session.get("register_msg1")
+    url = request.GET.get('url')
+    if login_msg1:
+        del request.session["login_msg1"]
+    if register_msg1:
+        del request.session["register_msg1"]
+    print(url)
+    print(username)
+    # video = Users.objects.filter(username=username)
+    # url = [j.headimg for j in video]
+    # Users_list = Users.objects.all()
+    if username:
+        print('有cookie')
+        return render_to_response('work/playpage1.html', locals())
+    else:
+        # username = ''
+        print('没有cookie')
+        return render_to_response('work/playpage1.html', locals())
 
 @csrf_exempt
 def upimg(request):
@@ -174,11 +196,11 @@ def upimg(request):
             print('我是谁')
         print(myfile)
         if myfile:
-            with open('F:/python project/dj_study/django_test/static/imgs/{0}'.format(myfile.name), 'wb') as f:
+            with open('F:/python project/dj_study/django_test/static/imgs/{0}'.format(username +"_"+ myfile.name), 'wb') as f:
                 for data in myfile.chunks():
                     f.write(data)
                 # user = UserInfo()  # 存储到数据库，img为存储的文件名，使用时，加上上传文件路径即可
-                UserInfo.objects.filter(username=username).update(image=myfile.name)
+                UserInfo.objects.filter(username=username).update(image=username+"_"+myfile.name)
                 # user.username = username
                 # user.image = myfile.name
                 # user.save()
@@ -205,9 +227,11 @@ def upvideo(request):
         # else:
         #     return render_to_response('work/person.html',{'class_error':'您未选择视频分类，请选择后上传！'})
         myfile = request.FILES.get('myfile', None)  # 获取files二进制流，如果没上传为None
-        print(len(myfile.name))
+        # print(len(myfile.name))
         if myfile is None:
+            request.session['none_error'] = '您未选择视频！请选择后上传！'
             print('我是谁')
+            return HttpResponseRedirect('/work/person')
         print(myfile)
         if myfile and len(myfile.name) <= 37:
             exsit = Users.objects.filter(username=username,headimg=myfile.name)
@@ -224,6 +248,7 @@ def upvideo(request):
                         user.headimg = myfile.name
                         user.classfi = radio
                         user.uptime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))
+                        user.status = 1 #待审核
                         user.save()
                         request.session['up_msg'] = '上传成功！'
                         return HttpResponseRedirect("/work/person/")
@@ -258,7 +283,7 @@ def index(request):
     print(username)
     # video = Users.objects.filter(username=username)
     # url = [j.headimg for j in video]
-    Users_list = Users.objects.filter(classfi='计算机').order_by('-uptime')
+    Users_list = Users.objects.filter(classfi='计算机',status=2).order_by('-uptime')
     print(Users_list)
     paginator = Paginator(Users_list, 12)  # 设置每一页显示几条  创建一个panginator对象
     try:
@@ -301,7 +326,7 @@ def index1(request):
     print(username)
     # video = Users.objects.filter(username=username)
     # url = [j.headimg for j in video]
-    Users_list = Users.objects.filter(classfi='外语').order_by('-uptime')
+    Users_list = Users.objects.filter(classfi='外语',status=2).order_by('-uptime')
     print(Users_list)
     paginator = Paginator(Users_list, 12)  # 设置每一页显示几条  创建一个panginator对象
     try:
@@ -344,7 +369,7 @@ def index2(request):
     print(username)
     # video = Users.objects.filter(username=username)
     # url = [j.headimg for j in video]
-    Users_list = Users.objects.filter(classfi='考研').order_by('-uptime')
+    Users_list = Users.objects.filter(classfi='考研',status=2).order_by('-uptime')
     print(Users_list)
     paginator = Paginator(Users_list, 12)  # 设置每一页显示几条  创建一个panginator对象
     try:
@@ -385,6 +410,14 @@ def logout1(request):
     request.session.clear() # 删除session
     userform = UserForm()
     return HttpResponseRedirect("/work/playpage?url="+ url, {"username": userform})
+
+def logout2(request):
+    url = request.GET.get('url')
+    print('已经退出了')
+    print(url)
+    request.session.clear() # 删除session
+    userform = UserForm()
+    return HttpResponseRedirect('/work/login', {"username": userform})
 
 @csrf_exempt
 def home(request):
@@ -437,6 +470,9 @@ def person(request):
     class_error = request.session.get("class_error")
     exsit_error = request.session.get("exsit_msg")
     length_error = request.session.get("length_error")
+    none_error = request.session.get("none_error")
+    print('喔2')
+    print(none_error)
     print(class_error)
     if class_error:
         del request.session['class_error']
@@ -444,6 +480,8 @@ def person(request):
         del request.session['exsit_msg']
     if length_error:
         del request.session['length_error']
+    if none_error:
+        del request.session['none_error']
     print('没有')
     print(msg)
     if msg:
@@ -468,17 +506,25 @@ def person(request):
     if image == '':
         image = 'touxiang.jpg'
     video = Users.objects.filter(username = username)
+    num = Users.objects.filter(username = username,status = 1)
+    num2 = Users.objects.filter(username = username,status = 2)
+    num1 = Users.objects.filter(username = username,status = 3)
+    # num = [j.count for j in num]
+    num = len(num)
+    num1 = len(num1)
+    num2 = len(num2)
+    print(num)
     url = [j.headimg for j in video]
     print(url)
     # context = RequestContext(request, {'username': username,'phone':phone[0],'url':url})
-    Users_list = Users.objects.filter(username = username).order_by('-uptime')
+    Users_list = Users.objects.filter(username = username,status = 2).order_by('-uptime')
     print(Users_list)
     paginator = Paginator(Users_list, 9)  # 设置每一页显示几条  创建一个panginator对象
     try:
         current_num = int(request.GET.get('page', 1))  # 当你在url内输入的?page = 页码数  显示你输入的页面数目 默认为第2页
-        Users_list = paginator.page(current_num)
+        Users_list1 = paginator.page(current_num)
     except EmptyPage:
-        Users_list = paginator.page(4)  # 当你输入的page是不存在的时候就会报错
+        Users_list1 = paginator.page(4)  # 当你输入的page是不存在的时候就会报错
     if paginator.num_pages > 11:  # 如果分页的数目大于11
         if current_num - 5 < 1:  # 你输入的值
             pageRange = range(1, 11)  # 按钮数
@@ -595,12 +641,20 @@ def login(request):
             password = userform.cleaned_data['password']
             print(username+password)
             user = UserInfo.objects.filter(username=username, password=password)
+            status = UserInfo.objects.values('authority').get(username=username)
+            status = status['authority']
+            print(status)
             print('你好')
             if user:
                 request.session['username'] = username  # 使用session来保存用户登录信息
                 request.session['login_msg'] = '登陆成功！'  # 使用session来保存用户登录信息
                 # response.set_cookie('name',username_get) #使用response（用户自己电脑）保存的cookie来验证用户登录
-                return HttpResponseRedirect('/work/home', {'userform': userform})
+                if status == 1:
+                    print('普通用户')
+                    return HttpResponseRedirect('/work/home', {'userform': userform})
+                else:
+                    print('管理员')
+                    return HttpResponseRedirect('/work/administrator')
             else:
                 return render_to_response('work/login.html',{'login_error':'用户或者密码错误，请重新输入！'})
         else:
@@ -717,3 +771,344 @@ def delete(request):
         return HttpResponseRedirect("/work/person",{'del':'删除成功！'})
     print('no')
     return render_to_response("work/person.html",{'del':'删除失败！'})
+
+def delete1(request):
+    username = request.session.get("username")
+    videoname = request.GET.get("filename")
+    s = Users.objects.filter(username = username,headimg = videoname)
+    print('晋')
+    print(videoname)
+    print(s)
+    if s:
+        print('san')
+        Users.objects.filter(username=username, headimg=videoname).delete()
+        request.session['msg'] = '取消成功！'
+        return HttpResponseRedirect("/work/review",{'del':'取消成功！'})
+    print('no')
+    return render_to_response("work/person.html",{'del':'删除失败！'})
+
+def ll(request):
+    username = request.session.get("username")
+    videoname = request.GET.get("filename")
+    s = Users.objects.filter(username = username,headimg = videoname)
+    print('晋')
+    print(videoname)
+    print(s)
+    if s:
+        print('san')
+        Users.objects.filter(username=username, headimg=videoname).delete()
+        request.session['msg'] = '删除成功！'
+        return HttpResponseRedirect("/work/refuse",{'del':'取消成功！'})
+    print('no')
+    return render_to_response("work/person.html",{'del':'删除失败！'})
+
+def review(request):
+    username = request.session['username']
+    msg = request.session.get('msg')
+    up_msg = request.session.get('up_msg')
+    up_msg1 = request.session.get('up_msg1')
+    upphone_msg = request.session.get('upphone_msg')
+    class_error = request.session.get("class_error")
+    exsit_error = request.session.get("exsit_msg")
+    length_error = request.session.get("length_error")
+    none_error = request.session.get("none_error")
+    print(class_error)
+    if class_error:
+        del request.session['class_error']
+    if exsit_error:
+        del request.session['exsit_msg']
+    if length_error:
+        del request.session['length_error']
+    if none_error:
+        del request.session['none_error']
+    print('没有')
+    print(msg)
+    if msg:
+        print('删除')
+        del request.session['msg']
+    if up_msg:
+        del request.session['up_msg']
+    if up_msg1:
+        del request.session['up_msg1']
+    if upphone_msg:
+        del request.session['upphone_msg']
+    print('当前登陆用户是：{0}'.format(username))
+    # template = loader.get_template('work/person.html')
+    # Users_id = request.GET.get('Users_id')
+    user = UserInfo.objects.filter(username=username)
+    phone = [j.phone for j in user]
+    image = [j.image for j in user]
+    phone = phone[0]
+    image = image[0]
+    print(phone[0])
+    print(image)
+    if image == '':
+        image = 'touxiang.jpg'
+    video = Users.objects.filter(username=username)
+    num = Users.objects.filter(username=username, status=1)
+    num2 = Users.objects.filter(username=username, status=2)
+    num1 = Users.objects.filter(username=username, status=3)
+    # num = [j.count for j in num]
+    num = len(num)
+    num1 = len(num1)
+    num2 = len(num2)
+    print(num)
+    url = [j.headimg for j in video]
+    print(url)
+    # context = RequestContext(request, {'username': username,'phone':phone[0],'url':url})
+    Users_list = Users.objects.filter(username=username, status=1).order_by('-uptime')
+    print(Users_list)
+    dispaly = 'none'
+    paginator = Paginator(Users_list, 9)  # 设置每一页显示几条  创建一个panginator对象
+    try:
+        current_num = int(request.GET.get('page', 1))  # 当你在url内输入的?page = 页码数  显示你输入的页面数目 默认为第2页
+        Users_list2 = paginator.page(current_num)
+    except EmptyPage:
+        Users_list2 = paginator.page(4)  # 当你输入的page是不存在的时候就会报错
+    if paginator.num_pages > 11:  # 如果分页的数目大于11
+        if current_num - 5 < 1:  # 你输入的值
+            pageRange = range(1, 11)  # 按钮数
+        elif current_num + 5 > paginator.num_pages:  # 按钮数加5大于分页数
+            pageRange = range(current_num - 5, current_num + 1)  # 显示的按钮数
+        else:
+            pageRange = range(current_num - 5, current_num + 6)  # range求的是按钮数   如果你的按钮数小于分页数 那么就按照正常的分页数目来显示
+    else:
+        pageRange = paginator.page_range  # 正常分配
+
+
+    return render_to_response('work/person.html', locals())
+
+def refuse(request):
+    username = request.session['username']
+    msg = request.session.get('msg')
+    up_msg = request.session.get('up_msg')
+    up_msg1 = request.session.get('up_msg1')
+    upphone_msg = request.session.get('upphone_msg')
+    class_error = request.session.get("class_error")
+    exsit_error = request.session.get("exsit_msg")
+    length_error = request.session.get("length_error")
+    none_error = request.session.get("none_error")
+    print(class_error)
+    if class_error:
+        del request.session['class_error']
+    if exsit_error:
+        del request.session['exsit_msg']
+    if length_error:
+        del request.session['length_error']
+    if none_error:
+        del request.session['none_error']
+    print('没有')
+    print(msg)
+    if msg:
+        print('删除')
+        del request.session['msg']
+    if up_msg:
+        del request.session['up_msg']
+    if up_msg1:
+        del request.session['up_msg1']
+    if upphone_msg:
+        del request.session['upphone_msg']
+    print('当前登陆用户是：{0}'.format(username))
+    # template = loader.get_template('work/person.html')
+    # Users_id = request.GET.get('Users_id')
+    user = UserInfo.objects.filter(username=username)
+    phone = [j.phone for j in user]
+    image = [j.image for j in user]
+    phone = phone[0]
+    image = image[0]
+    print(phone[0])
+    print(image)
+    if image == '':
+        image = 'touxiang.jpg'
+    video = Users.objects.filter(username=username)
+    num1 = Users.objects.filter(username=username, status=3)
+    num2 = Users.objects.filter(username=username, status=2)
+    num = Users.objects.filter(username=username, status=1)
+    # num = [j.count for j in num]
+    num1 = len(num1)
+    num2 = len(num2)
+    num = len(num)
+    print(num1)
+    url = [j.headimg for j in video]
+    dispaly1 = 'none'
+    print(url)
+    print('在这里')
+    print(dispaly1)
+    # context = RequestContext(request, {'username': username,'phone':phone[0],'url':url})
+    Users_list = Users.objects.filter(username=username, status=3).order_by('-uptime')
+    print(Users_list)
+    paginator = Paginator(Users_list, 9)  # 设置每一页显示几条  创建一个panginator对象
+    try:
+        current_num = int(request.GET.get('page', 1))  # 当你在url内输入的?page = 页码数  显示你输入的页面数目 默认为第2页
+        Users_list3 = paginator.page(current_num)
+    except EmptyPage:
+        Users_list3 = paginator.page(4)  # 当你输入的page是不存在的时候就会报错
+    if paginator.num_pages > 11:  # 如果分页的数目大于11
+        if current_num - 5 < 1:  # 你输入的值
+            pageRange = range(1, 11)  # 按钮数
+        elif current_num + 5 > paginator.num_pages:  # 按钮数加5大于分页数
+            pageRange = range(current_num - 5, current_num + 1)  # 显示的按钮数
+        else:
+            pageRange = range(current_num - 5, current_num + 6)  # range求的是按钮数   如果你的按钮数小于分页数 那么就按照正常的分页数目来显示
+    else:
+        pageRange = paginator.page_range  # 正常分配
+
+
+    return render_to_response('work/person.html', locals())
+
+@csrf_exempt
+def administrator(request):
+    username = request.session['username']
+    msg = request.session.get('msg')
+    up_msg = request.session.get('up_msg')
+    up_msg1 = request.session.get('up_msg1')
+    upphone_msg = request.session.get('upphone_msg')
+    class_error = request.session.get("class_error")
+    exsit_error = request.session.get("exsit_msg")
+    length_error = request.session.get("length_error")
+    print(class_error)
+    if class_error:
+        del request.session['class_error']
+    if exsit_error:
+        del request.session['exsit_msg']
+    if length_error:
+        del request.session['length_error']
+    print('没有')
+    print(msg)
+    if msg:
+        print('删除')
+        del request.session['msg']
+    if up_msg:
+        del request.session['up_msg']
+    if up_msg1:
+        del request.session['up_msg1']
+    if upphone_msg:
+        del request.session['upphone_msg']
+    print('当前登陆用户是：{0}'.format(username))
+    # template = loader.get_template('work/person.html')
+    # Users_id = request.GET.get('Users_id')
+    user = UserInfo.objects.filter(username = username)
+    phone = [j.phone for j in user]
+    image = [j.image for j in user]
+    phone = phone[0]
+    image = image[0]
+    print(phone[0])
+    print(image)
+    if image == '':
+        image = 'touxiang.jpg'
+    video = Users.objects.filter(username = username)
+    num = Users.objects.filter(status = 1)
+    num1 = Users.objects.filter(status = 3)
+    # num = [j.count for j in num]
+    num = len(num)
+    num1 = len(num1)
+    print(num)
+    url = [j.headimg for j in video]
+    print(url)
+    # context = RequestContext(request, {'username': username,'phone':phone[0],'url':url})
+    Users_list = Users.objects.filter(status = 1).order_by('-uptime')
+    print(Users_list)
+    paginator = Paginator(Users_list, 9)  # 设置每一页显示几条  创建一个panginator对象
+    try:
+        current_num = int(request.GET.get('page', 1))  # 当你在url内输入的?page = 页码数  显示你输入的页面数目 默认为第2页
+        Users_list1 = paginator.page(current_num)
+    except EmptyPage:
+        Users_list1 = paginator.page(4)  # 当你输入的page是不存在的时候就会报错
+    if paginator.num_pages > 11:  # 如果分页的数目大于11
+        if current_num - 5 < 1:  # 你输入的值
+            pageRange = range(1, 11)  # 按钮数
+        elif current_num + 5 > paginator.num_pages:  # 按钮数加5大于分页数
+            pageRange = range(current_num - 5, current_num + 1)  # 显示的按钮数
+        else:
+            pageRange = range(current_num - 5, current_num + 6)  # range求的是按钮数   如果你的按钮数小于分页数 那么就按照正常的分页数目来显示
+    else:
+        pageRange = paginator.page_range  # 正常分配
+
+    return render_to_response('work/admin.html',locals())
+
+def b_pass(request):
+    username = request.GET.get('username')
+    filename = request.GET.get('filename')
+    up = Users.objects.filter(username=username,headimg=filename).update(status=2)
+    if up:
+        return HttpResponseRedirect('/work/administrator')
+
+def b_refuse(request):
+    username = request.GET.get('username')
+    filename = request.GET.get('filename')
+    up = Users.objects.filter(username=username, headimg=filename).update(status=3)
+    if up:
+        return HttpResponseRedirect('/work/administrator')
+
+def c_refuse(request):
+    username = request.session['username']
+    msg = request.session.get('msg')
+    up_msg = request.session.get('up_msg')
+    up_msg1 = request.session.get('up_msg1')
+    upphone_msg = request.session.get('upphone_msg')
+    class_error = request.session.get("class_error")
+    exsit_error = request.session.get("exsit_msg")
+    length_error = request.session.get("length_error")
+    print(class_error)
+    if class_error:
+        del request.session['class_error']
+    if exsit_error:
+        del request.session['exsit_msg']
+    if length_error:
+        del request.session['length_error']
+    print('没有')
+    print(msg)
+    if msg:
+        print('删除')
+        del request.session['msg']
+    if up_msg:
+        del request.session['up_msg']
+    if up_msg1:
+        del request.session['up_msg1']
+    if upphone_msg:
+        del request.session['upphone_msg']
+    print('当前登陆用户是：{0}'.format(username))
+    # template = loader.get_template('work/person.html')
+    # Users_id = request.GET.get('Users_id')
+    user = UserInfo.objects.filter(username=username)
+    phone = [j.phone for j in user]
+    image = [j.image for j in user]
+    phone = phone[0]
+    image = image[0]
+    print(phone[0])
+    print(image)
+    if image == '':
+        image = 'touxiang.jpg'
+    video = Users.objects.filter(username=username)
+    num1 = Users.objects.filter(status=3)
+    num = Users.objects.filter(status=1)
+    # num = [j.count for j in num]
+    num1 = len(num1)
+    num = len(num)
+    print(num1)
+    url = [j.headimg for j in video]
+    dispaly1 = 'none'
+    print(url)
+    print('在这里')
+    print(dispaly1)
+    # context = RequestContext(request, {'username': username,'phone':phone[0],'url':url})
+    Users_list = Users.objects.filter(status=3).order_by('-uptime')
+    print(Users_list)
+    paginator = Paginator(Users_list, 9)  # 设置每一页显示几条  创建一个panginator对象
+    try:
+        current_num = int(request.GET.get('page', 1))  # 当你在url内输入的?page = 页码数  显示你输入的页面数目 默认为第2页
+        Users_list2 = paginator.page(current_num)
+    except EmptyPage:
+        Users_list2 = paginator.page(4)  # 当你输入的page是不存在的时候就会报错
+    if paginator.num_pages > 11:  # 如果分页的数目大于11
+        if current_num - 5 < 1:  # 你输入的值
+            pageRange = range(1, 11)  # 按钮数
+        elif current_num + 5 > paginator.num_pages:  # 按钮数加5大于分页数
+            pageRange = range(current_num - 5, current_num + 1)  # 显示的按钮数
+        else:
+            pageRange = range(current_num - 5, current_num + 6)  # range求的是按钮数   如果你的按钮数小于分页数 那么就按照正常的分页数目来显示
+    else:
+        pageRange = paginator.page_range  # 正常分配
+
+
+    return render_to_response('work/admin.html', locals())

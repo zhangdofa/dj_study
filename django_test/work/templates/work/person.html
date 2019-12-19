@@ -108,7 +108,7 @@
 
         .imga{
             width: 100%;
-            height: 120px;
+            height: 110px;
             background-color: #fafffb;
         }
         .upload {
@@ -121,7 +121,18 @@
             font-weight: bold;
             font-size: large
         }
-
+        .review{
+            font-weight: bold;
+            font-size: large
+        }
+        .review1{
+            font-weight: bold;
+            font-size: large
+        }
+        .my_video{
+            font-weight: bold;
+            font-size: large
+        }
         .title {
             font-size: large;
             font-weight: bold;
@@ -165,6 +176,17 @@
             font-weight: bolder;
             color: #8a8a8a;
         }
+        .num{
+            border-radius: 50%;
+            height: 15px;
+            width: 20px;
+            display: inline-block;
+            background: #f30303;
+            vertical-align: top;
+            font-size:x-small;
+            font-weight: bolder;
+            /*display: none;*/
+        }
     </style>
 </head>
 <body>
@@ -185,7 +207,7 @@
 <div class="nei">
 <div class="left">
     <div class="imga">
-        <img class="touxiang" src="/static/imgs/{{image}}" style="width: 50%;height:120px;float: left;">
+        <img class="touxiang" src="/static/imgs/{{image}}" style="width: 50%;height:100px;float: left;margin-top: 5px">
         <form action="/work/upimg" method="post" enctype="multipart/form-data" id="myform1">
             <div class="a-upload">
                 <input type="file" name="myfile1" id=""><span>点击这里选择文件</span>
@@ -209,6 +231,21 @@
     </div>
     <div class="name">
         <div style="float: left;" class="upphone">更改手机号</div>
+    </div>
+    <div class="name">
+        <div style="float: left;" class="my_video">我的视频<span  class="num">
+      <span class="num5" style="display: block;color: #FFFFFF;height: 10px;line-height: 15px;text-align: center">{{num2}}</span>
+        </span></div>
+    </div>
+    <div class="name">
+        <div style="float: left;" class="review">待审核<span  class="num">
+      <span class="num3" style="display: block;color: #FFFFFF;height: 10px;line-height: 15px;text-align: center">{{num}}</span>
+        </span></div>
+    </div>
+    <div class="name">
+        <div style="float: left;" class="review1">审核未通过<span class="num">
+      <span  class="num4" style="display: block;color: #FFFFFF;height: 10px;line-height: 15px;text-align: center"> {{num1}}</span>
+        </span></div>
     </div>
     <div class="updown">上传视频</div>
     <!--<form action="" method="post" enctype="multipart/form-data" id="myform">-->
@@ -240,10 +277,14 @@
         <div class="class_error" style="display: none">{{class_error}}</div>
         <div class="exsit_error" style="display: none">{{exsit_error}}</div>
         <div class="length_error" style="display: none">{{length_error}}</div>
+        <div class="none_error" style="display: none">{{none_error}}</div>
+        <div class="dis" style="display: none">{{dispaly}}</div>
+        <div class="dis1" style="display: none">{{dispaly1}}</div>
 </div>
 <div class="right">
+    <div class="myvideo">
     <div class="title">我的视频</div>
-    {% for Users in Users_list %}
+    {% for Users in Users_list1 %}
     <div class="contents">
         <video class="videos" preload="metadata" onloadeddata='vSetImg(this)' width="100%" height="240"
                src="/static/media/{{ Users.headimg }}">
@@ -254,14 +295,91 @@
         <div style="font-size: x-small;font-weight: bold;position: absolute;bottom: 0">于{{ Users.uptime }}上传</div>
         <div class="del" style="position: absolute;bottom: 0;right: 0;z-index: 9999">删除</div>
     </div>
-    <!--<video width="260" height="240" controls="controls">-->
-    <!--<source src="/static/media/{{ foo }}" type="video/mp4"/>-->
-    <!--</video>-->
     {% endfor %}
-    <!--{% for foo in url %}-->
+    <div style="position: absolute;bottom: 0;left: 40%;">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if Users_list.has_previous %}
+                <li><a href="?page={{ Users_list.previous_page_number }}" aria-label="Previous"><span
+                        aria-hidden="true">上一页</span></a></li>
+                {% else %}
+                <li class="disabled"><a href="" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                {% endif %}
+                {# disabled是当你的按钮不满足的时候不可以点击了#}
+                {% for i in pageRange %}
+                {% if current_num == i %}
+                <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                {% else %}
+                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+                {% endfor %}
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
 
-    <!--<img src="/static/media/{{ foo }}" style="height:100px;margin-top: 14px;">-->
-    <!--{% endfor %}-->
+    </div>
+</div>
+    <div class="myvideo1" style="">
+    <div class="title">待审核视频</div>
+     <div style="text-align: center;color: red;margin-bottom: 10px">请等待管理员审核!将在两个工作日内完成审核!审核通过请在我的视频里查看!</div>
+    {% for Users in Users_list2 %}
+    <div class="contents">
+        <video class="videos" preload="metadata" onloadeddata='vSetImg(this)' width="100%" height="240"
+               src="/static/media/{{ Users.headimg }}">
+            <source src="/static/media/{{ Users.headimg }}" type="video/mp4"/>
+        </video>
+        <img class="img" src=""/>
+        <div class="title1" style="position: absolute;top: 250px;width: 100%;height: auto;">{{ Users.headimg }}</div>
+        <div style="font-size: x-small;font-weight: bold;position: absolute;bottom: 0">于{{ Users.uptime }}上传审核</div>
+        <div class="cancel" style="position: absolute;bottom: 0;right: 0;z-index: 9999">取消审核</div>
+    </div>
+    {% endfor %}
+    <div style="position: absolute;bottom: 0;left: 40%;">
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                {% if Users_list.has_previous %}
+                <li><a href="?page={{ Users_list.previous_page_number }}" aria-label="Previous"><span
+                        aria-hidden="true">上一页</span></a></li>
+                {% else %}
+                <li class="disabled"><a href="" aria-label="Previous"><span aria-hidden="true">上一页</span></a></li>
+                {% endif %}
+                {# disabled是当你的按钮不满足的时候不可以点击了#}
+                {% for i in pageRange %}
+                {% if current_num == i %}
+                <li class="active"><a href="?page={{ i }}">{{ i }}</a></li>
+                {% else %}
+                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                {% endif %}
+                {% endfor %}
+                <li>
+                    <a href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+    </div>
+</div>
+    <div class="myvideo2" style="">
+    <div class="title">审核未通过视频</div>
+    <div style="text-align: center;color: red;margin-bottom: 10px">未通过审核代表您上传的视频包含黄赌毒、政治敏感以及一些违法视频</div>
+    {% for Users in Users_list3 %}
+    <div class="contents">
+        <video class="videos" preload="metadata" onloadeddata='vSetImg(this)' width="100%" height="240"
+               src="/static/media/{{ Users.headimg }}">
+            <source src="/static/media/{{ Users.headimg }}" type="video/mp4"/>
+        </video>
+        <img class="img" src=""/>
+        <div class="title1" style="position: absolute;top: 250px;width: 100%;height: auto;">{{ Users.headimg }}</div>
+        <div style="font-size: x-small;font-weight: bold;position: absolute;bottom: 0">于{{ Users.uptime }}提交审核</div>
+        <div class="ee" style="position: absolute;bottom: 0;right: 0;z-index: 9999">删除</div>
+    </div>
+    {% endfor %}
     <div style="position: absolute;bottom: 0;left: 40%;">
         <nav aria-label="Page navigation">
             <ul class="pagination">
@@ -290,6 +408,7 @@
     </div>
 </div>
 </div>
+</div>
 <script>
     var msg = $(".msg").html();
     var up_msg = $(".up_msg").html();
@@ -298,16 +417,32 @@
     var msg1 = $(".class_error").html();
     var msg2 = $(".exsit_error").html();
     var msg3 = $(".length_error").html();
-    console.log(msg);
-    console.log(msg1);
-    console.log(up_msg);
-    console.log(up_msg1);
-    console.log(up_msg2);
-    console.log(msg2);
-    console.log(msg3);
-    if (msg === 'None'){
+    var msg6 = $(".none_error").html();
+    var msg4 = $(".dis").html();
+    var msg5 = $(".dis1").html();
+//    console.log(msg);
+//    console.log(msg1);
+//    console.log(up_msg);
+//    console.log(up_msg1);
+//    console.log(up_msg2);
+//    console.log(msg2);
+//    console.log(msg3);
+//    console.log(msg4);
+//    console.log(msg5);
+    console.log(msg6);
+    if (msg4 === 'none'){
+//        alert('成功')
+        $('.myvideo').hide()
     }else {
-        alert('删除成功！')
+        $('.myvideo1').hide()
+    }
+    if (msg5 === 'none'){
+//        alert('成功')
+        $('.myvideo').hide();
+//        $('.myvideo').hide()
+    }else {
+        $('.myvideo2').hide();
+//        $('.myvideo1').hide()
     }
     if (msg1 === 'None'){
     }else {
@@ -321,9 +456,17 @@
     }else {
         alert('文件名长度请勿超过37！请重命名您的文件！')
     }
+    if (msg6 === 'None'){
+    }else {
+        alert(msg6)
+    }
+     if (msg === 'None'){
+    }else {
+        alert(msg)
+    }
     if(up_msg === 'None'){
     }else {
-        alert('上传视频成功！')
+        alert('上传视频成功！请等待审核!')
     }
     if(up_msg1 === 'None'){
     }else {
@@ -389,11 +532,47 @@
       $(".del").on("click", function (e) {
           	e.stopPropagation();//防止事件冒泡到DOM树上，也就是不触发的任何前辈元素上的事件处理函数。
          var filename =  $(this).prev().prev().html();
-//          alert(filename);
-        window.location.href = '/work/delete?filename='+filename;
+          var r = confirm("您确定要删除?");
+          if(r===true){
+              window.location.href = '/work/delete?filename='+filename;
+          }else {}
 //          alert("{{del}}");
     });
-
+      $(".cancel").on("click", function (e) {
+          	e.stopPropagation();//防止事件冒泡到DOM树上，也就是不触发的任何前辈元素上的事件处理函数。
+         var filename =  $(this).prev().prev().html();
+          var r = confirm("您确定要取消!确定将删除您上传的视频!");
+          if(r===true){
+              window.location.href = '/work/cacel?filename='+filename;
+          }else{
+          }
+//          alert("{{del}}");
+    });
+      $(".ee").on("click", function (e) {
+          	e.stopPropagation();//防止事件冒泡到DOM树上，也就是不触发的任何前辈元素上的事件处理函数。
+         var filename =  $(this).prev().prev().html();
+        var r = confirm("您确定要删除!确定将删除您本条记录!");
+        if(r===true){
+            window.location.href = '/work/ll?filename='+filename;
+        }else {}
+//          alert("{{del}}");
+    });
+       $(".my_video").on("click", function () {
+//          $('.myvideo').hide();
+          window.location.href = '/work/person';
+//                    alert('woshi');
+    });
+      $(".review").on("click", function () {
+//          $('.myvideo').hide();
+          window.location.href = '/work/review';
+//                    alert('woshi');
+    });
+    $(".review1").on("click", function () {
+//          $('.myvideo').hide();
+//        alert('火狐');
+          window.location.href = '/work/refuse';
+//                    alert('woshi');
+    });
 </script>
 </body>
 </html>

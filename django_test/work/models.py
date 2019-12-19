@@ -13,6 +13,7 @@ class Users(models.Model):
     headimg = models.FileField(upload_to='file') #定义上传的路径，相对于settings中的MEDIA_ROOT路径
     classfi = models.CharField(max_length=10)
     uptime = models.DateTimeField('上传日期')
+    status = models.IntegerField()
     def __str__(self):
         return self.username
 
@@ -23,3 +24,4 @@ class UserInfo(models.Model):
     password = models.CharField(max_length=15)
     phone = models.CharField(max_length=11)
     image = models.FileField(upload_to='images')
+    authority = models.IntegerField(default=1)

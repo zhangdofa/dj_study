@@ -181,11 +181,6 @@
                     <div style="font-size: 12px;font-weight: bold;bottom: 0;position: absolute;">{{ Users.username }} 于{{ Users.uptime }}上传</div>
                 </div>
                 {% endfor %}
-                <!--{% for foo in url %}-->
-                <!--<video width="260" height="240" controls="controls">-->
-                <!--<source src="/static/media/{{ foo }}" type="video/mp4"/>-->
-                <!--</video>-->
-                <!--{% endfor %}-->
             </div>
         </div>
         <div>
@@ -232,6 +227,19 @@
                 console.log(msg4);
 //                alert(msg);
                 //                console.log(typeof(s));
+                   if (s === "None") {
+//                    console.log(s);
+                    $('.wel').hide();
+                    $('.dropbtn').hide();
+                    $('#login').show();
+                    $('.dropdown-content').hide();
+                    console.log("没有登陆！")
+                } else {
+//                    console.log(s);
+                    $('#login').hide();
+                    $('.dropbtn').show();
+                    console.log("已经登陆")
+                }
                  if (msg === 'None'){
                  }else {
                     alert('登陆成功！')
@@ -251,19 +259,6 @@
                 if (msg4=== 'None'){
                  }else {
                     alert('抱歉！没有找到你想要的内容！')
-                }
-                if (s === "None") {
-//                    console.log(s);
-                    $('.wel').hide();
-                    $('.dropbtn').hide();
-                    $('#login').show();
-                    $('.dropdown-content').hide();
-                    console.log("没有登陆！")
-                } else {
-//                    console.log(s);
-                    $('#login').hide();
-                    $('.dropbtn').show();
-                    console.log("已经登陆")
                 }
                 $(".contents").on("click",function(){
                    var src =  $(this).find('video').attr("src");
